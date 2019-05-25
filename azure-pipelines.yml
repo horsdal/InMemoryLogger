@@ -1,0 +1,28 @@
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+variables:
+  buildConfiguration: 'Release'
+  majorVersion: '1'
+  minorVersion: '0'
+
+steps:
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'build'
+- script: dotnet test test/InMemoryLogger.Tests.csproj --configuration $(buildConfiguration) --logger trx
+  displayName: 'unit test'  
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
+  displayName: 'publish test results'
+  condition: always()
+- script: dotnet pack src/InMemoryLogger.csproj --configuration $(buildConfiguration) --no-build /p:Version=$(majorVersion).$(minorVersion).$(Build.BuildId)
+  displayName: 'create package'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: push
+    nuGetFeedType: internal
+    publishVstsFeed: InMemoryLogger
+    packagesToPush: '**/*nupkg'
+  displayName: 'publish package'

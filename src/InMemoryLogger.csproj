@@ -1,7 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Microsoft.Extensions.Logging compatible logger for recording log messages during tests</Description>
+    <PackageTags>Microsoft.Extensions.Logging test unittest</PackageTags>
+    <Authors>Christian Horsdal</Authors>
+    <PackageProjectUrl>https://github.com/horsdal/InMemoryLogger</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/horsdal/InMemoryLogger/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageId>InMemoryLogger</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
