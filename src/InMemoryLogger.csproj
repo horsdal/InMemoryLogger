@@ -7,7 +7,6 @@
     <Authors>Christian Horsdal</Authors>
     <Copyright>Christian Horsdal</Copyright>
     <PackageProjectUrl>https://github.com/horsdal/InMemoryLogger</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>InMemoryLogger</PackageId>
   </PropertyGroup>
