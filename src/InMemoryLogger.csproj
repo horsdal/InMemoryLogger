@@ -5,8 +5,10 @@
     <Description>Microsoft.Extensions.Logging compatible logger for recording log messages during tests</Description>
     <PackageTags>Microsoft.Extensions.Logging test unittest</PackageTags>
     <Authors>Christian Horsdal</Authors>
+    <Copyright>Christian Horsdal</Copyright>
     <PackageProjectUrl>https://github.com/horsdal/InMemoryLogger</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/horsdal/InMemoryLogger/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>InMemoryLogger</PackageId>
   </PropertyGroup>
 
