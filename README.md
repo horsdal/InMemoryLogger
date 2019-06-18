@@ -14,7 +14,7 @@ Install from NuGet:
 Then add InMemoryLogger as the logger in your applications service collection:
 ```csharp
       var services = new ServiceCollection()
-        .AddLogging(x => x.AddInMemmory())
+        .AddLogging(x => x.AddInMemory())
         .BuildServiceProvider();
 
       var inMemLogger = services.GetService<InMemoryLogger>();

@@ -18,7 +18,7 @@ namespace InMemLogger.Tests
     public InMemoryLogger_should()
     {
       var services = new ServiceCollection()
-        .AddLogging(x => x.SetMinimumLevel(LogLevel.Trace).AddInMemmory())
+        .AddLogging(x => x.SetMinimumLevel(LogLevel.Trace).AddInMemory())
         .BuildServiceProvider();
 
       this.ilogger = services.GetService<ILogger<InMemoryLogger_should>>();

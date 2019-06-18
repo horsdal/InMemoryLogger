@@ -8,7 +8,7 @@
 
   public static class LoggingBuilderExtensions
   {
-    public static ILoggingBuilder AddInMemmory(this ILoggingBuilder builder)
+    public static ILoggingBuilder AddInMemory(this ILoggingBuilder builder)
     {
       var logger = new InMemoryLogger();
       builder.Services.AddSingleton(logger);
