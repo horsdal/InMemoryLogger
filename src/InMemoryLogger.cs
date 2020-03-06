@@ -22,7 +22,7 @@
 
     public InMemLoggerProvider(InMemoryLogger logger) => this.logger = logger;
 
-    public ILogger CreateLogger(string categoryName) => logger;
+    public ILogger CreateLogger(string categoryName) => this.logger;
 
     public void Dispose() { }
   }
@@ -31,13 +31,13 @@
   {
     private readonly List<(LogLevel, Exception, string)> logLines = new List<(LogLevel, Exception, string)>();
 
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedLogs => this.logLines.AsReadOnly();
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedTraceLogs => this.logLines.Where(l => l.Item1 == LogLevel.Trace);
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedDebugLogs => this.logLines.Where(l => l.Item1 == LogLevel.Debug);
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedInformationLogs => this.logLines.Where(l => l.Item1 == LogLevel.Information);
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedWarningLogs => this.logLines.Where(l => l.Item1 == LogLevel.Warning);
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedErrorLogs => this.logLines.Where(l => l.Item1 == LogLevel.Error);
-    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedCriticalLogs => this.logLines.Where(l => l.Item1 == LogLevel.Critical);
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedLogs { get { lock (this.logLines) { return this.logLines.ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedTraceLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Trace).ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedDebugLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Debug).ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedInformationLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Information).ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedWarningLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Warning).ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedErrorLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Error).ToList(); } } }
+    public IEnumerable<(LogLevel Level, Exception Exception, string Message)> RecordedCriticalLogs { get { lock (this.logLines) { return this.logLines.Where(l => l.Item1 == LogLevel.Critical).ToList(); } } }
 
     public IDisposable BeginScope<TState>(TState state) => null;
 
@@ -45,7 +45,21 @@
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
-      this.logLines.Add((logLevel, exception, formatter(state, exception)));
+      var message=formatter(state, exception);
+      lock (this.logLines)
+      {
+        this.logLines.Add((logLevel, exception,message ));
+      }
+      if (logLevel>=MinimumEventSeverity)
+      {
+        LoggedEvent?.Invoke(this,(logLevel, exception,message ));
+      }
     }
+    /// <summary>
+    /// This event handler is called synchronously inside the logging call.  Take great care when
+    /// setting the minimum event severity low, or taking significant time within the event handler
+    /// </summary>
+    public LogLevel MinimumEventSeverity { get; set; } = LogLevel.None;
+    public event EventHandler<(LogLevel Level, Exception Exception, string Message)> LoggedEvent;
   }
 }

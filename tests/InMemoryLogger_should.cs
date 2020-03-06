@@ -13,7 +13,7 @@ namespace InMemLogger.Tests
     private readonly InMemoryLogger inMemLogger;
 
     public static IEnumerable<object[]> LogLevels() =>
-      ((IEnumerable<LogLevel>) Enum.GetValues(typeof(LogLevel))).Select(v => new object[] { v });
+      ((IEnumerable<LogLevel>)Enum.GetValues(typeof(LogLevel))).Select(v => new object[] { v });
 
     public InMemoryLogger_should()
     {
@@ -44,5 +44,27 @@ namespace InMemLogger.Tests
 
       Assert.Contains(this.inMemLogger.RecordedLogs, l => l.Level == level && l.Exception == expected);
     }
+
+    [Theory]
+    [MemberData(nameof(LogLevels))]
+    public void check_events(LogLevel level)
+    {
+      var expected = new Exception();
+      int numEvents = 0;
+      this.inMemLogger.MinimumEventSeverity = level;
+      this.inMemLogger.LoggedEvent += (o, e) =>
+      {
+        ++numEvents;
+        Assert.True(e.Level >= level);
+      };
+      for (var testLevel = LogLevel.Trace; testLevel < LogLevel.None; ++testLevel)
+      {
+        this.ilogger.Log(testLevel, expected, "");
+      }
+
+      Assert.True(this.inMemLogger.RecordedLogs.Count() == LogLevel.None - LogLevel.Trace );
+      Assert.True(numEvents == LogLevel.None-level);
+    }
+
   }
 }
