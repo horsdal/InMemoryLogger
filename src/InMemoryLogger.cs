@@ -45,10 +45,21 @@
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
-      lock(this.logLines)
+      var message=formatter(state, exception);
+      lock (this.logLines)
       {
-        this.logLines.Add((logLevel, exception, formatter(state, exception)));
+        this.logLines.Add((logLevel, exception,message ));
+      }
+      if (logLevel>=MinimumEventSeverity)
+      {
+        LoggedEvent?.Invoke(this,(logLevel, exception,message ));
       }
     }
+    /// <summary>
+    /// This event handler is called synchronously inside the logging call.  Take great care when
+    /// setting the minimum event severity low, or taking significant time within the event handler
+    /// </summary>
+    public LogLevel MinimumEventSeverity { get; set; } = LogLevel.None;
+    public event EventHandler<(LogLevel Level, Exception Exception, string Message)> LoggedEvent;
   }
 }
